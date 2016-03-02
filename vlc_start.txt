@@ -1,0 +1,43 @@
+//…„œÒÕ∑ø™∆Ù√¸¡Ó
+ng the camera with VLC
+Install VLC
+VLC is available through the raspbian repositories:
+
+ 
+$ sudo apt-get install vlc
+RTSP with VLC
+Start never ending server at 1280x720 30 frames per second, and 4.5 Mbps:
+
+ 
+$ raspivid -n -w 1280 -h 720 -b 4500000 -fps 30 -vf -hf -t 0 -o - | \
+     cvlc -vvv stream:///dev/stdin --sout '#rtp{sdp=rtsp://:9000/}' :demux=h264
+
+ 
+$ raspivid -n -w 320-h 180 -b 4500000 -fps 15 -vf -hf -t 0 -o - | \
+     cvlc -vvv stream:///dev/stdin --sout '#rtp{sdp=rtsp://:9000/}' :demux=h264
+On 
+the client side:
+
+ $ cvlc rtsp://192.168.1.110:9000/
+CPU load:
+
+ref. load: 6% CPU
+0 clients: 25% CPU
+1 clients: 35% CPU
+2 clients: 45% CPU
+
+HTTP with VLC
+Server:
+
+ 
+$ raspivid -n -w 1280 -h 720 -b 4500000 -fps 30 -vf -hf -t 0 -o - | \
+     cvlc -vvv stream:///dev/stdin --sout '#standard{access=http,mux=ts,dst=:9000}' :demux=h264
+Client:
+
+ $  cvlc http://192.168.1.110:9000/
+I observed very poor video quality (pixelated) at client end.
+
+CPU load:
+
+0 clients: 25%
+1 clients: 33%
